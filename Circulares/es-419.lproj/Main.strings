@@ -1,0 +1,48 @@
+
+/* Class = "UIButton"; configuration.title = "Iniciar sesión"; ObjectID = "5DZ-HY-3zD"; */
+"5DZ-HY-3zD.configuration.title" = "Iniciar sesión";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "5DZ-HY-3zD"; */
+"5DZ-HY-3zD.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Usuario"; ObjectID = "721-MM-kkk"; */
+"721-MM-kkk.text" = "Usuario";
+
+/* Class = "UIBarButtonItem"; title = "Circulares"; ObjectID = "7Za-m8-ahH"; */
+"7Za-m8-ahH.title" = "Circulares";
+
+/* Class = "UILabel"; text = "Para:"; ObjectID = "EjU-ki-o4g"; */
+"EjU-ki-o4g.text" = "Para:";
+
+/* Class = "UINavigationItem"; title = "Circulares"; ObjectID = "IH9-LZ-G0j"; */
+"IH9-LZ-G0j.title" = "Circulares";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "IpT-S8-6Ui"; */
+"IpT-S8-6Ui.normalTitle" = "Button";
+
+/* Class = "UIButton"; configuration.title = "   Iniciar sesión con Google"; ObjectID = "Qaf-f0-14J"; */
+"Qaf-f0-14J.configuration.title" = "   Iniciar sesión con Google";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "Qaf-f0-14J"; */
+"Qaf-f0-14J.normalTitle" = "Button";
+
+/* Class = "UIBarButtonItem"; title = "Menú"; ObjectID = "TsH-Fe-dWO"; */
+"TsH-Fe-dWO.title" = "Menú";
+
+/* Class = "UINavigationItem"; title = "Mi Credencial"; ObjectID = "UAV-3d-akV"; */
+"UAV-3d-akV.title" = "Mi Credencial";
+
+/* Class = "UILabel"; text = "Password"; ObjectID = "XFQ-md-9X2"; */
+"XFQ-md-9X2.text" = "Password";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "pzD-jv-Sn8"; */
+"pzD-jv-Sn8.text" = "Label";
+
+/* Class = "UIButton"; configuration.title = "Iniciar sesión con Apple"; ObjectID = "upq-Iu-pDp"; */
+"upq-Iu-pDp.configuration.title" = "Iniciar sesión con Apple";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "upq-Iu-pDp"; */
+"upq-Iu-pDp.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "xZy-5F-Os3"; */
+"xZy-5F-Os3.text" = "Label";
