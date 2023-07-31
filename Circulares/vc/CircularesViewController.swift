@@ -13,6 +13,8 @@ import Foundation
 class CircularesViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,
 UISearchBarDelegate{
     var idCircular:String=""
+    let activityIndicator = UIActivityIndicatorView(style: .gray)
+      
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
          return circulares.count
     
@@ -22,7 +24,7 @@ UISearchBarDelegate{
     let FAVORITAS=2
     let ELIMINADAS=3
     var seleccion:Int=0
-    
+    var userId:String=""
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         cell?.selectionStyle = .none
@@ -77,6 +79,7 @@ UISearchBarDelegate{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        userId = UserDefaults.standard.string(forKey: "idUsuario") ?? "0"
         if(seleccion==TODAS){
             mostrarTodas()
         }
@@ -95,10 +98,14 @@ UISearchBarDelegate{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        userId = UserDefaults.standard.string(forKey: "idUsuario") ?? "0"
         renderUI()
         self.tableViewCirculares.dataSource = self
         self.tableViewCirculares.delegate = self
         self.searchBar.delegate = self
+        activityIndicator.center = view.center
+        tableViewCirculares.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
     }
     
     @IBAction func homeOnClickListener(_ sender: UIButton) {
@@ -129,6 +136,8 @@ UISearchBarDelegate{
                         }
                     }
                     OperationQueue.main.addOperation {
+                        self.activityIndicator.stopAnimating()
+                        self.activityIndicator.removeFromSuperview()
                         self.tableViewCirculares.reloadData()
                     }
                 } else {
@@ -165,6 +174,8 @@ UISearchBarDelegate{
         }else{
             if(searchText.count>=4){
                 circulares = circulares.filter({$0.nombre.lowercased().contains(searchBar.text!.lowercased()) || $0.contenido.lowercased().contains(searchBar.text!.lowercased())})
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.removeFromSuperview()
                 self.tableViewCirculares?.reloadData()
             }
         }
@@ -223,7 +234,7 @@ UISearchBarDelegate{
     @objc func mostrarTodas(){
         self.title = "Circulares"
         seleccion = TODAS
-        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCirculares_Android.php?usuario_id=1463"
+        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCirculares_Android.php?usuario_id=\(userId)"
         
                    guard let _url = URL(string: address) else { return };
                    self.getDataFromURL(url: _url)
@@ -232,7 +243,7 @@ UISearchBarDelegate{
     @objc func mostrarNoLeidas(){
         self.title = "No leídas"
         seleccion = NO_LEIDAS
-        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCircularesNoLeidas.php?usuario_id=1463"
+        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCircularesNoLeidas.php?usuario_id=\(userId)"
         
                    guard let _url = URL(string: address) else { return };
                    self.getDataFromURL(url: _url)
@@ -241,7 +252,7 @@ UISearchBarDelegate{
     @objc func mostrarFavoritas(){
         seleccion = FAVORITAS
         self.title = "Favoritas"
-        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCircularesFavoritas.php?usuario_id=1463"
+        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCircularesFavoritas.php?usuario_id=\(userId)"
         
                    guard let _url = URL(string: address) else { return };
                    self.getDataFromURL(url: _url)
@@ -250,7 +261,7 @@ UISearchBarDelegate{
     @objc func mostrarEliminadas(){
         seleccion = ELIMINADAS
         self.title = "Eliminadas"
-        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCircularesEliminadas.php?usuario_id=1463"
+        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCircularesEliminadas.php?usuario_id=\(userId)"
         
                    guard let _url = URL(string: address) else { return };
                    self.getDataFromURL(url: _url)
@@ -272,11 +283,11 @@ UISearchBarDelegate{
         if(favorita==0){
         
             cell.imgEstrella.image = UIImage(named: "estrella_amarilla")
-            Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/favCircular.php", usuario_id: "1463", circular_id: idC)
+            Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/favCircular.php", usuario_id: userId, circular_id: idC)
             
         }else{
             cell.imgEstrella.image = UIImage(named: "estrella_fav_icono")
-            Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/elimFavCircular.php", usuario_id: "1463", circular_id: idC)
+            Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/elimFavCircular.php", usuario_id: userId, circular_id: idC)
         }
     }
     
@@ -290,8 +301,10 @@ UISearchBarDelegate{
                                         title: "") { [self] (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
             if(seleccion != ELIMINADAS){
                 let idCircular:String = "\(circular.id)"
-                Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/eliminarCircular.php", usuario_id: "1463", circular_id: idCircular)
+                Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/eliminarCircular.php", usuario_id: userId, circular_id: idCircular)
                 circulares.remove(at: indexPath.row)
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.removeFromSuperview()
                 self.tableViewCirculares.reloadData()
             }
         }
@@ -310,7 +323,7 @@ UISearchBarDelegate{
         
             if(seleccion != NO_LEIDAS){
                 idCircular = String(circular.id)
-                Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/noleerCircular.php", usuario_id: "1463", circular_id: idCircular)
+                Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/noleerCircular.php", usuario_id: userId, circular_id: idCircular)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     if(seleccion==TODAS){
@@ -326,6 +339,8 @@ UISearchBarDelegate{
                     if(seleccion==ELIMINADAS){
                         mostrarEliminadas()
                     }
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.removeFromSuperview()
                     tableViewCirculares.reloadData()
                 }
                 
@@ -347,7 +362,7 @@ UISearchBarDelegate{
         let action = UIContextualAction(style: .normal,
                                         title: "") { [self] (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
             let idCircular:String = "\(circular.id)"
-            Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: "1463", circular_id: idCircular)
+            Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: userId, circular_id: idCircular)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 if(seleccion==TODAS){
                     mostrarTodas()
@@ -362,6 +377,8 @@ UISearchBarDelegate{
                 if(seleccion==ELIMINADAS){
                     mostrarEliminadas()
                 }
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.removeFromSuperview()
                 tableViewCirculares.reloadData()
             }
         }

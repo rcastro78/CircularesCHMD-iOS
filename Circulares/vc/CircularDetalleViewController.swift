@@ -19,13 +19,15 @@ class CircularDetalleViewController: UIViewController,WKNavigationDelegate {
     @IBOutlet weak var stvMenuContainer: UIStackView!
     @IBOutlet weak var webContainer: WKWebView!
     var idx:Int=0
-    
+    var userId:String=""
    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         renderUI()
         let idCircular:String = UserDefaults.standard.string(forKey: "id") ?? "0"
+        userId = UserDefaults.standard.string(forKey: "idUsuario") ?? "0"
+        
         let horaInicialIcs:String = UserDefaults.standard.string(forKey: "horaInicialIcs") ?? "0"
         let favorita:Int = UserDefaults.standard.integer(forKey: "favorita") ?? 0
         idx = UserDefaults.standard.integer(forKey: "idx") ?? 0
@@ -39,10 +41,10 @@ class CircularDetalleViewController: UIViewController,WKNavigationDelegate {
             btnCalendario.setImage(UIImage(named: "calendario_blanco"), for: .normal)
         }
         
-        Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: "1463", circular_id: idCircular)
+        Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: userId, circular_id: idCircular)
         
             
-        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCirculares_Android.php?usuario_id=1463"
+        let address="https://www.chmd.edu.mx/WebAdminCirculares/ws/getCirculares_Android.php?usuario_id=\(userId)"
         
                    guard let _url = URL(string: address) else { return };
                    self.getDataFromURL(url: _url)
@@ -138,7 +140,7 @@ class CircularDetalleViewController: UIViewController,WKNavigationDelegate {
             btnCalendario.setImage(UIImage(named: "calendario_blanco"), for: .normal)
         }
         
-        Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: "1463", circular_id: idCircular)
+        Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: userId, circular_id: idCircular)
         
         let link = URL(string:Constantes().urlBase+"getCircularId6.php?id="+idCircular)!
         let request = URLRequest(url: link)
@@ -151,7 +153,7 @@ class CircularDetalleViewController: UIViewController,WKNavigationDelegate {
             idx = 0
         }
         let idCircular = String(circulares[idx].id)
-        Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: "1463", circular_id: idCircular)
+        Utilerias().modificarCircular(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/leerCircular.php", usuario_id: userId, circular_id: idCircular)
         
         if(circulares[idx].favorita==1){
             btnEstrella.setImage(UIImage(named: "estrella_blanca"), for: .normal)

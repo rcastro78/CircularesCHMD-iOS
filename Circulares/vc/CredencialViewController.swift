@@ -60,7 +60,7 @@ class CredencialViewController: UIViewController {
         label.textAlignment = .center
         label.font = .mediumThemeFont(size: 17)
         label.text = "Nombre"
-        label.textColor = UIColor.azulColegio
+        label.textColor = UIColor.textoClaro
         return label
     }()
     
@@ -70,7 +70,7 @@ class CredencialViewController: UIViewController {
         label.font = .mediumThemeFont(size: 15)
         label.textAlignment = .center
         label.text = "Padre"
-        label.textColor = UIColor.azulColegio
+        label.textColor = UIColor.textoClaro
         return label
     }()
     
@@ -80,7 +80,7 @@ class CredencialViewController: UIViewController {
         label.font = .mediumThemeFont(size: 15)
         label.textAlignment = .center
         label.text = "Vigencia"
-        label.textColor = UIColor.azulColegio
+        label.textColor = UIColor.textoClaro
         return label
     }()
     

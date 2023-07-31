@@ -1,0 +1,6 @@
+framework module Pods_Circulares_CircularesUITests {
+  umbrella header "Pods-Circulares-CircularesUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

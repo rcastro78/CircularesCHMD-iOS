@@ -6,49 +6,29 @@
 //
 
 import UIKit
-
+import AVFoundation
 class MenuPrincipalViewController: UIViewController {
     let base_url_foto:String="http://chmd.chmd.edu.mx:65083/CREDENCIALES/padres/"
     let base_url:String="https://www.chmd.edu.mx/WebAdminCirculares/ws/";
     let get_usuario:String="getUsuarioEmail.php";
     let get_vigencia:String="getVigencia.php";
-    
+    var userId:String=""
     @IBOutlet weak var stackViewContainer: UIStackView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        playBackgoundVideo()
         renderUI()
-        
-        //cifrarIdUsuario(uri:base_url+"cifrar.php?idUsuario="+self.idUsuario)
-        //getVigenciaUsuario(uri:base_url+"getVigencia.php?idUsuario="+self.idUsuario)
-        //Utilerias().cifrarIdUsuario(uri:base_url+"cifrar.php?idUsuario=1463")
-        //Utilerias().getVigenciaUsuario(uri:base_url+"getVigencia.php?idUsuario=1463")
-        //Utilerias().obtenerDatosUsuario(uri: base_url+get_usuario+"?correo=programador@chmd.edu.mx")
-        obtenerDatosDelUsuario()
-        obtenerVigenciaDelUsuario()
+        userId = UserDefaults.standard.string(forKey: "idUsuario") ?? "0"
         cifrarUsuario()
         
         
     }
     
     
-    func obtenerDatosDelUsuario() {
-            let usuarioURL = base_url+get_usuario+"?correo=programador@chmd.edu.mx"
-            
-        Utilerias().obtenerDatosUsuario(uri: usuarioURL) { result in
-                switch result {
-                case .success:
-                    // La función se ejecutó con éxito, aquí puedes realizar acciones adicionales
-                    print("Datos del usuario obtenidos correctamente.")
-                case .failure(let error):
-                    // Ocurrió un error al obtener los datos del usuario
-                    print("Error al obtener los datos del usuario: \(error.localizedDescription)")
-                }
-            }
-        }
-    
+   
     func obtenerVigenciaDelUsuario() {
-            let usuarioURL = base_url+get_vigencia+"?idUsuario=1463"
+            let usuarioURL = base_url+get_vigencia+"?idUsuario=\(userId)"
             
         Utilerias().getVigenciaUsuario(uri: usuarioURL) { result in
                 switch result {
@@ -64,7 +44,7 @@ class MenuPrincipalViewController: UIViewController {
     
     
     func cifrarUsuario() {
-            let usuarioURL = base_url+"cifrar.php?idUsuario=1463"
+            let usuarioURL = base_url+"cifrar.php?idUsuario=\(userId)"
             
         Utilerias().cifrarIdUsuario(uri: usuarioURL) { result in
                 switch result {
@@ -133,6 +113,20 @@ class MenuPrincipalViewController: UIViewController {
     }
     
     
-    
+    private func playBackgoundVideo() {
+        if let filePath = Bundle.main.path(forResource: "video_app", ofType: "mp4") {
+                    let filePathUrl = URL(fileURLWithPath: filePath)
+                    let player = AVPlayer(url: filePathUrl)
+                    let playerLayer = AVPlayerLayer(player: player)
+                    playerLayer.frame = view.bounds
+                    playerLayer.videoGravity = AVLayerVideoGravity.resize
+                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: nil) { (_) in
+                        player.seek(to: .zero)
+                        player.play()
+                    }
+                    view.layer.insertSublayer(playerLayer, at: 0) // Agregar AVPlayerLayer al fondo de la vista principal
+                    player.play()
+                }
+    }
     
 }

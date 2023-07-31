@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Alamofire
+import Firebase
 class Utilerias:NSObject{
     let base_url_foto:String="http://chmd.chmd.edu.mx:65083/CREDENCIALES/padres/"
     
@@ -243,52 +244,63 @@ class Utilerias:NSObject{
         
     }
     
+    
+    
     func obtenerDatosUsuario(uri: String, completionHandler: @escaping (Result<Void, Error>) -> Void) {
-        AF.request(uri).validate().responseJSON { response in
+        AF.request(uri).validate(statusCode: 200..<400).responseJSON { response in
             switch response.result {
             case .success(let value):
-                if let diccionarios = value as? [[String: Any]] {
-                    for diccionario in diccionarios {
-                        guard let id = diccionario["id"] as? String,
-                              let nombre = diccionario["nombre"] as? String,
-                              let numero = diccionario["numero"] as? String,
-                              let familia = diccionario["familia"] as? String,
-                              let fotografia = diccionario["fotografia"] as? String,
-                              let responsable = diccionario["responsable"] as? String,
-                              let correo = diccionario["correo"] as? String,
-                              let nuevaFoto = diccionario["nuevaFoto"] as? String else {
-                            print("Error: No se pudieron obtener los datos del usuario")
-                            continue
-                        }
-                        
-                        var fotoUrl = ""
-                        
-                        if fotografia.count > 5 {
-                            fotoUrl = self.base_url_foto + fotografia.components(separatedBy: "\\")[4]
-                        } else {
-                            fotoUrl = self.base_url_foto + "sinfoto.png"
-                        }
-                        
-                        // Guardar las variables en UserDefaults
-                        UserDefaults.standard.set(id, forKey: "idUsuario")
-                        UserDefaults.standard.set(nombre, forKey: "nombreUsuario")
-                        UserDefaults.standard.set(numero, forKey: "numeroUsuario")
-                        UserDefaults.standard.set(familia, forKey: "familia")
-                        UserDefaults.standard.set(fotoUrl, forKey: "fotoUrl")
-                        UserDefaults.standard.set(responsable, forKey: "responsable")
-                        UserDefaults.standard.set(correo, forKey: "correo")
-                        UserDefaults.standard.set(nuevaFoto, forKey: "nuevaFoto")
-                        UserDefaults.standard.synchronize()
-                        
-                        print("idUsuario: \(id)")
-                    }
-                    completionHandler(.success(()))
-                } else {
-                    let error = NSError(domain: "Error en la estructura de la respuesta", code: 0, userInfo: nil)
+                guard let diccionarios = value as? [[String: Any]] else {
+                    let errorInfo: [String: Any] = [NSLocalizedDescriptionKey: "Error en la estructura de la respuesta", NSLocalizedFailureReasonErrorKey: "No se pudieron obtener los datos del usuario"]
+                    let error = NSError(domain: "MiDominio.error", code: 1, userInfo: errorInfo)
                     completionHandler(.failure(error))
+                    return
                 }
+
+                for diccionario in diccionarios {
+                    guard let id = diccionario["id"] as? String,
+                          let nombre = diccionario["nombre"] as? String,
+                          let numero = diccionario["numero"] as? String,
+                          let familia = diccionario["familia"] as? String,
+                          let fotografia = diccionario["fotografia"] as? String,
+                          let responsable = diccionario["responsable"] as? String,
+                          let correo = diccionario["correo"] as? String,
+                          let nuevaFoto = diccionario["nuevaFoto"] as? String else {
+                        print("Error: No se pudieron obtener los datos del usuario")
+                        continue
+                    }
+                    
+                    let token:String = UserDefaults.standard.string(forKey: "deviceToken") ?? "0"
+                    let os = ProcessInfo().operatingSystemVersion
+                    let so = "iOS \(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
+                    
+                    self.registrarDispositivo(direccion: "https://www.chmd.edu.mx/WebAdminCirculares/ws/registrarDispositivo.php", correo: correo, device_id: token, so: so,id:id)
+                    
+                    
+                    var fotoUrl = ""
+                    if fotografia.count > 5 {
+                        fotoUrl = self.base_url_foto + fotografia.components(separatedBy: "\\")[4]
+                    } else {
+                        fotoUrl = self.base_url_foto + "sinfoto.png"
+                    }
+
+                    // Guardar las variables en UserDefaults
+                    UserDefaults.standard.set(id, forKey: "idUsuario")
+                    UserDefaults.standard.set(nombre, forKey: "nombreUsuario")
+                    UserDefaults.standard.set(numero, forKey: "numeroUsuario")
+                    UserDefaults.standard.set(familia, forKey: "familia")
+                    UserDefaults.standard.set(fotoUrl, forKey: "fotoUrl")
+                    UserDefaults.standard.set(responsable, forKey: "responsable")
+                    UserDefaults.standard.set(correo, forKey: "correo")
+                    UserDefaults.standard.set(nuevaFoto, forKey: "nuevaFoto")
+                    UserDefaults.standard.synchronize()
+
+                    print("VALIDAR idUsuario: \(id)")
+                }
+
+                completionHandler(.success(()))
             case .failure(let error):
-                print("Error en la consulta: \(error)")
+                print("VALIDAR Error en la consulta: \(error)")
                 completionHandler(.failure(error))
             }
         }
@@ -305,7 +317,20 @@ class Utilerias:NSObject{
      }*/
     
     //Trabajo de cambios en estados (favorita, leer, no leer o eliminar)
-    
+    func registrarDispositivo(direccion: String, correo: String, device_id: String, so: String, id: String) {
+        let parameters: [String: Any] = ["correo": correo, "device_token": device_id, "plataforma": so, "id_usuario": id]
+        
+        AF.request(direccion, method: .post, parameters: parameters)
+            .validate() // Optional: To add response validation if needed
+            .responseJSON { response in
+                switch response.result {
+                case .success(let value):
+                    print("Response: \(value)")
+                case .failure(let error):
+                    print("Error: \(error)")
+                }
+            }
+    }
     
     
     
